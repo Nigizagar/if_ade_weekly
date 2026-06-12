@@ -1,3 +1,36 @@
+<?php
+
+    require "fungsi.php";
+
+    if($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        $nama = $_POST["nama"];
+        $nim = $_POST["nim"]; // pastikan isi nim berupa angka/string sesuai tipe kolom di DB
+        $nim = trim($nim);
+        $jurusan = $_POST["jurusan"];
+        $email = $_POST["email"];
+        $no_hp = $_POST["no_hp"];
+        // foto diketik sebagai nama file (contoh: Muhalim.jpeg)
+        $foto = isset($_POST["foto"]) ? $_POST["foto"] : '';
+
+
+        // simpan data ke tabel mahasiswa (langsung saja, tanpa prepared statement agar minim perubahan)
+        $query = "INSERT INTO mahasiswa (nama, nim, jurusan, email, no_hp, foto) VALUES ('$nama', '$nim', '$jurusan', '$email', '$no_hp', '$foto')";
+        mysqli_query($conn, $query);
+
+        if (mysqli_affected_rows($conn) > 0) {
+            // jika berhasil, redirect ke halaman data mahasiswa
+            header("Location: mahasiswa.php");
+            exit;
+        } else {
+            echo "Gagal menambahkan data mahasiswa.";
+        }
+    }
+
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +41,7 @@
 </head>
 <body>
     <h2>Tambah Data Mahasiswa Informatika 2026</h2>
-    <form action="mahasiswa.php" method="post">
+<form action="tambahdata.php" method="post" enctype="multipart/form-data">
         <table cellpadding="5">
             <tr>
                 <td><label for="nama">Nama</label></td>
@@ -16,121 +49,36 @@
                 <td><input type="text" id="nama" name="nama"></td>
             </tr>
             <tr>
+                <td><label for="nim">NIM</label></td>
+                <td>:</td>
+                <td><input type="text" id="nim" name="nim"></td>
+            </tr>
+            <tr>
+                <td><label for="jurusan">Jurusan</label></td>
+                <td>:</td>
+                <td><input type="text" id="jurusan" name="jurusan"></td>
+            </tr>
+            <tr>
+                <td><label for="email">Email</label></td>
+                <td>:</td>
+                <td><input type="email" id="email" name="email"></td>
+            </tr>
+            <tr>
+                <td><label for="no_hp">No HP</label></td>
+                <td>:</td>
+                <td><input type="tel" id="no_hp" name="no_hp"></td>
+            </tr>
+            <tr>
                 <td><label for="foto">Foto</label></td>
                 <td>:</td>
-                <td><input type="file" id="foto" name="foto"></td>
+                <td><input type="text" id="foto" name="foto" placeholder="contoh: Muhalim.jpeg"></td>
             </tr>
-            <tr>
-                <td><label for="uts">Nilai UTS</label></td>
-                <td>:</td>
-                <td><input type="number" id="uts" name="Nilai UTS">
-            </tr>
-            <tr>
-                <td><label for="uas">Nilai UAS</label></td>
-                <td>:</td>
-                <td><input type="number" id="uas" name="Nilai UAS"></td>
-            </tr>
-            <tr>
-                <td><label for="tugas">Nilai Tugas</label></td>
-                <td>:</td>
-                <td><input type="number" id="tugas" name="Nilai Tugas"></td>
-            </tr>
+
         </table>
         <br>
         <button type="submit">Tambahkan Data</button>
         <br>
-        <hr>
-        <form>
-            <table cellpadding="5">
-                <tr>
-                    <td><label for="nama">Nama</label></td>
-                    <td>:<td>
-                    <td><input type="text" id="nama" name="name"></td>
-                </tr>
-                <tr>
-                    <td><label for="nim">NIM</label></td>
-                    <td>:<td>
-                    <td><input type="text" id="nim" name="nim"></td>
-                </tr>
-                <tr>
-                    <td><label for="pw">Password</label></td>
-                    <td>:<td>
-                    <td><input type="password" id="pw" name="password"></td>
-                </tr>
-                <tr>
-                    <td><label for="email">Email</label></td>
-                    <td>:<td>
-                    <td><input type="email" id="email" name="email"></td>
-                </tr>
-                <tr>
-                    <td><label for="nohp">No HP</label></td>
-                    <td>:<td>
-                    <td><input type="tel" id="nohp" name="nohp"></td>
-                </tr>
-                <tr>
-                    <td><label for="web">Website Pribadi</label></td>
-                    <td>:<td>
-                    <td><input type="url" id="web" name="website"></td>
-                </tr>
-                <tr>
-                    <td><label for="ttl">Tanggal Lahir</label></td>
-                    <td>:<td>
-                    <td><input type="date" id="ttl" name="tanggal lahir"></td>
-                </tr>
-                <tr>
-                    <td><label for="warnaf">Warna Favorit</label></td>
-                    <td>:<td>
-                    <td><input type="color" id="warnaf" name="warna favorit"></td>
-                </tr>
-                <tr>
-                    <td><label for="puas">Tingkat Kepuasan</label></td>
-                    <td>:<td>
-                    <td><input type="range" id="puas" name="tingkat kepuasan"></td>
-                </tr>
-                <tr>
-                    <td><label for="kelamin">Jenis Kelamin</label></td>
-                    <td>:<td>
-                    <td>
-                        <input type="radio" id="laki" name="kelamin" value="Laki-laki">
-                        <label for="laki">Laki-laki</label>
-                        <input type="radio" id="perempuan" name="kelamin" value="Perempuan">
-                        <label for="perempuan">Perempuan</label>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label for="hobi">Hobi</label></td>
-                    <td>:<td>
-                    <td>
-                        <input type="checkbox" id="futsal" name="hobi" value="Futsal">
-                        <label for="futsal">Futsal</label>
-                        <input type="checkbox" id="karate" name="hobi" value="Karate">
-                        <label for="karate">Karate</label>
-                        <input type="checkbox" id="bola" name="hobi" value="Bola">
-                        <label for="bola">Bola</label>
-                    </td>
-                <tr>
-                    <td><label for="foto">Foto</label></td>
-                    <td>:<td>
-                    <td><input type="file" id="foto" name="foto"></td>
-                </tr>
-                <tr>
-                    <td><label for="alamat">Alamat</label></td>
-                    <td>:<td>
-                    <td><input type="textarea" id="alamat" name="alamat"></td>
-                </tr>
-                <tr>
-                    <td><label for="Jurusan">Jurusan</label></td>
-                    <td>:<td>
-                    <td><select id="Jurusan" name="jurusan">
-                        <option value="Informatika">Informatika</option>
-                        <option value="Sistem Informasi">Sistem Informasi</option>
-                        <option value="Teknik Komputer">Teknik Komputer</option>
-                    </select></td>
-                </tr>
-        <br>
-        <button type="submit">Tambahkan Data</button>
         </table>
-        </form>
-    </form>
+</form>
 </body>
 </html>

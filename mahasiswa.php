@@ -1,9 +1,21 @@
+<?php
+
+require "fungsi.php";
+
+// Ambil data mahasiswa dari database
+$result = mysqli_query($conn, "SELECT id, nama, nim, jurusan, email, no_hp, foto FROM mahasiswa");
+if (!$result) {
+    $result = false;
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Mahasiswa Informatika 2026</title>
+    <title>Data Mahasiswa Informatika 2026</title>
     <link rel="stylesheet" href="aset/css/style.css">
 </head>
 <body>
@@ -13,72 +25,60 @@
             <td><a href="profile.php">Profile</a></td>
             <td><a href="index.php">Home</a></td>
             <td><a href="contact.php">Contact</a></td>
-            <td><a href="contact.php">Data Mahasiswa </a></td>
+            <td><a href="contact.php">Data Mahasiswa</a></td>
         </tr>
     </table>
+
     <h2>Data Mahasiswa Informatika 2026</h2>
-    <a href ="tambahdata.php">
-    <button>Tambah Data Mahasiswa</button>
+    <a href="tambahdata.php">
+        <button>Tambah Data Mahasiswa</button>
     </a>
+
     <table border="1" cellspacing="0" cellpadding="10">
         <tr>
-            <th rowspan="2">NO</th>
-            <th rowspan="2">Foto</th>  
-            <th rowspan="2">Nama</th>
-            <th colspan="3">NILAI</th>
+            <th>No</th>
+            <th>Nama</th>
+            <th>NIM</th>
+            <th>Jurusan</th>
+            <th>Email</th>
+            <th>No. Hp</th>
+            <th>Foto</th>
+            <th>Aksi</th>
         </tr>
-        <tr>
-            <th>UTS</th>    
-            <th>UAS</th>
-            <th>TUGAS</th>
-        </tr>
-        <tr>
-            <td align="center">1</td>
-            <td><img src="aset/Image/Muhalim.jpeg" alt="Foto Mahasiswa 1" width="100px"></td>
-            <td>Ade Putra</td>
-            <td align="center">85</td>
-            <td align="center">90</td>
-            <td align="center">88</td>
-        </tr>
-        <tr>
-            <td align="center">2</td>
-            <td><img src="aset/Image/Muhalim.jpeg" alt="Foto Mahasiswa 2" width="100px"></td>
-            <td>Rizky Maulana</td>
-            <td align="center">80</td>
-            <td align="center">85</td>
-            <td align="center">82</td>
-        </tr>
-        <tr>
-            <td align="center">3</td>
-            <td><img src="aset/Image/Muhalim.jpeg" alt="Foto Mahasiswa 3" width="100px"></td>
-            <td>Siti Aisyah</td>
-            <td align="center">90</td>
-            <td align="center">92</td>
-            <td align="center">95</td>      
-        </tr>
-    </table>
-    <br>
-    <table border="1" celspacing="10" cellpadding="10">
-        <tr>
-            <th>1,1</th>
-            <th>1,2</th>
-            <th>1,3</th>
-            <th>1,4</th>
-        </tr>
-        <tr>
-            <th>2,1</th>
-            <th colspan="2" rowspan="2">?</th>
-            <th>2,4</th>
-        </tr>
-        <tr>
-            <th>3,1</th>
-            <th>3,4</th>
-        </tr>
-        <tr>
-            <th>4,1</th>
-            <th>4,2</th>
-            <th>4,3</th>
-            <th>4,4</th>
+
+        <?php if ($result && mysqli_num_rows($result) > 0) : ?>
+            <?php $no = 1; while ($row = mysqli_fetch_assoc($result)) : ?>
+                <tr>
+                    <td align="center"><?php echo $no++; ?></td>
+                    <td><?php echo htmlspecialchars($row['nama'] ?? ''); ?></td>
+                    <td><?php echo htmlspecialchars($row['nim'] ?? ''); ?></td>
+                    <td><?php echo htmlspecialchars($row['jurusan'] ?? ''); ?></td>
+                    <td><?php echo htmlspecialchars($row['email'] ?? ''); ?></td>
+                    <td><?php echo htmlspecialchars($row['no_hp'] ?? ''); ?></td>
+                    <td>
+                        <?php
+                        $foto = $row['foto'] ?? '';
+                        if (!empty($foto)) {
+                            echo '<img src="aset/Image/' . htmlspecialchars($foto) . '" alt="Foto Mahasiswa" width="100px">';
+                        } else {
+                            echo '-';
+                        }
+                        ?>
+                    </td>
+                    <td>
+                        <a href="editdata.php">Edit</a> |
+                        <a href="hapusdata.php?id=<?php echo (int)($row['id'] ?? 0); ?>
+                        "onclick="return confirm('Apakah yakin mau menghapus data ini?');">Hapus</a>
+
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+        <?php else : ?>
+            <tr>
+                <td colspan="8" align="center">Belum ada data</td>
+            </tr>
+        <?php endif; ?>
     </table>
 </body>
 </html>
+
