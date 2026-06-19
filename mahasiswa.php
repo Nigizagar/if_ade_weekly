@@ -66,10 +66,8 @@ if (!$result) {
                         ?>
                     </td>
                     <td>
-                        <a href="editdata.php">Edit</a> |
-                        <a href="hapusdata.php?id=<?php echo (int)($row['id'] ?? 0); ?>
-                        "onclick="return confirm('Apakah yakin mau menghapus data ini?');">Hapus</a>
-
+                        <a href="ubahdata.php?id=<?php echo (int)($row['id'] ?? 0); ?>">Edit</a> |
+                        <a href="hapusdata.php?id=<?php echo (int)($row['id'] ?? 0); ?>" onclick="return confirm('Apakah yakin mau menghapus data ini?');">Hapus</a>
                     </td>
                 </tr>
             <?php endwhile; ?>

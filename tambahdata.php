@@ -10,9 +10,29 @@
         $jurusan = $_POST["jurusan"];
         $email = $_POST["email"];
         $no_hp = $_POST["no_hp"];
-        // foto diketik sebagai nama file (contoh: Muhalim.jpeg)
-        $foto = isset($_POST["foto"]) ? $_POST["foto"] : '';
+        $foto = '';
 
+        // upload file foto
+        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+            $tmpName = $_FILES['foto']['tmp_name'];
+            $namaFile = $_FILES['foto']['name'];
+            $namaFile = preg_replace('/[^A-Za-z0-9._-]/', '_', $namaFile);
+
+            // ganti nama menjadi unik (uniqid)
+            $ext = pathinfo($namaFile, PATHINFO_EXTENSION);
+            $ext = preg_replace('/[^A-Za-z0-9]/', '', $ext);
+            $namaFile = uniqid('foto_', true) . ($ext ? '.' . $ext : '');
+
+            $targetDir = __DIR__ . '/aset/Image/';
+            if (!is_dir($targetDir)) {
+                mkdir($targetDir, 0777, true);
+            }
+
+            $targetPath = $targetDir . $namaFile;
+            if (move_uploaded_file($tmpName, $targetPath)) {
+                $foto = $namaFile;
+            }
+        }
 
         // simpan data ke tabel mahasiswa (langsung saja, tanpa prepared statement agar minim perubahan)
         $query = "INSERT INTO mahasiswa (nama, nim, jurusan, email, no_hp, foto) VALUES ('$nama', '$nim', '$jurusan', '$email', '$no_hp', '$foto')";
@@ -68,10 +88,13 @@
                 <td>:</td>
                 <td><input type="tel" id="no_hp" name="no_hp"></td>
             </tr>
-            <tr>
+<tr>
                 <td><label for="foto">Foto</label></td>
                 <td>:</td>
-                <td><input type="text" id="foto" name="foto" placeholder="contoh: Muhalim.jpeg"></td>
+                <td>
+                    <input type="file" id="foto" name="foto" accept="image/*">
+                    <small>Nama file otomatis</small>
+                </td>
             </tr>
 
         </table>
