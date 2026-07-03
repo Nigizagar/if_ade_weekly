@@ -4,6 +4,11 @@
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
+// Session handling (dipakai untuk autentikasi)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $host = 'localhost';
 $user = 'root';
 $pass = '';
@@ -33,6 +38,17 @@ function tambahData($data) {
     return mysqli_query($conn, $query);
 }
 
+function isLoggedIn(): bool {
+    return isset($_SESSION['user']) && !empty($_SESSION['user']);
+}
+
+function requireLogin(): void {
+    if (!isLoggedIn()) {
+        header('Location: login.php');
+        exit;
+    }
+}
+
 function hapusData($id) {
     global $conn;
 
@@ -44,3 +60,37 @@ function hapusData($id) {
     return false;
 }
 
+function register($data) {
+    global $conn;
+
+    $username = strtolower(stripslashes($data["username"]));
+    $password1 = mysqli_real_escape_string($conn, $data["password1"]);
+    $password2 = mysqli_real_escape_string($conn, $data["password2"]);
+
+    // cek username sudah ada atau belum
+    $result = mysqli_query($conn, "SELECT username FROM user WHERE username = '$username'");
+    if(mysqli_fetch_assoc($result)) {
+        echo "<script>
+                alert('Username sudah terdaftar!');
+              </script>";
+        return 0;
+    }
+
+
+    // cek konfirmasi password
+    if($password1 != $password2) {
+        echo "<script>
+                alert('Password tidak sesuai!');
+                window.location.href = 'register.php';
+              </script>";
+        return false;
+    }
+
+    // enkripsi password
+    $passwordHash = password_hash($password1, PASSWORD_DEFAULT);
+
+    // tambahkan user baru ke database
+    mysqli_query($conn, "INSERT INTO user (username, password) VALUES ('$username', '$passwordHash')");
+
+    return mysqli_affected_rows($conn);
+}

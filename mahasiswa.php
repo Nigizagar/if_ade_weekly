@@ -1,6 +1,7 @@
 <?php
 
 require "fungsi.php";
+requireLogin();
 
 // Ambil data mahasiswa dari database
 $result = mysqli_query($conn, "SELECT id, nama, nim, jurusan, email, no_hp, foto FROM mahasiswa");
@@ -25,7 +26,8 @@ if (!$result) {
             <td><a href="profile.php">Profile</a></td>
             <td><a href="index.php">Home</a></td>
             <td><a href="contact.php">Contact</a></td>
-            <td><a href="contact.php">Data Mahasiswa</a></td>
+            <td><a href="register.php">Register</a></td>
+            <td><a href="mahasiswa.php">Data Mahasiswa</a></td>
         </tr>
     </table>
 
